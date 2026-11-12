@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "labops"
+version = "0.1.0"
+description = "Local Infrastructure Automation and Self-Service Operations Platform"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+labops = "labops.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "platform/cli"}
+
+[tool.setuptools.packages.find]
+where = ["platform/cli"]
