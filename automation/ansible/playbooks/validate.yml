@@ -1,0 +1,53 @@
+
+---
+- name: Validate LabOps platform
+  hosts: labops
+  gather_facts: false
+
+  vars:
+    app_url: http://localhost:8080
+
+  tasks:
+    - name: Check application endpoint
+      ansible.builtin.uri:
+        url: "{{ app_url }}/"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: app_response
+
+    - name: Check application health
+      ansible.builtin.uri:
+        url: "{{ app_url }}/health"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: health_response
+
+    - name: Check database connectivity
+      ansible.builtin.uri:
+        url: "{{ app_url }}/db-health"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: database_response
+
+    - name: Verify application response
+      ansible.builtin.assert:
+        that:
+          - app_response.json.application == "LabOps Demo App"
+        success_msg: "Application endpoint is working."
+
+    - name: Verify application health
+      ansible.builtin.assert:
+        that:
+          - health_response.json.status == "healthy"
+        success_msg: "Application healthcheck passed."
+
+    - name: Verify database connection
+      ansible.builtin.assert:
+        that:
+          - database_response.json.status == "healthy"
+          - database_response.json.database == "connected"
+          - database_response.json.query_result == 1
+        success_msg: "PostgreSQL connection and SQL query verified."

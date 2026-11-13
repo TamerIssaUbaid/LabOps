@@ -1,0 +1,9 @@
+---
+- name: Prepare LabOps environment
+  ansible.builtin.import_playbook: prepare.yml
+
+- name: Deploy LabOps platform
+  ansible.builtin.import_playbook: deploy.yml
+
+- name: Validate LabOps platform
+  ansible.builtin.import_playbook: validate.yml

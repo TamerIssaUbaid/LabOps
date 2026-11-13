@@ -1,0 +1,56 @@
+
+---
+- name: Prepare and validate LabOps environment
+  hosts: labops
+  gather_facts: false
+
+  tasks:
+    - name: Check Docker CLI
+      ansible.builtin.command:
+        argv:
+          - docker
+          - --version
+      register: docker_version
+      changed_when: false
+
+    - name: Check Docker Compose
+      ansible.builtin.command:
+        argv:
+          - docker
+          - compose
+          - version
+      register: compose_version
+      changed_when: false
+
+    - name: Check Docker Engine availability
+      ansible.builtin.command:
+        argv:
+          - docker
+          - info
+      register: docker_engine
+      changed_when: false
+
+    - name: Check Python installation
+      ansible.builtin.command:
+        argv:
+          - python3
+          - --version
+      register: python_version
+      changed_when: false
+
+    - name: Check Git installation
+      ansible.builtin.command:
+        argv:
+          - git
+          - --version
+      register: git_version
+      changed_when: false
+
+    - name: Display environment information
+      ansible.builtin.debug:
+        msg:
+          - "{{ docker_version.stdout }}"
+          - "{{ compose_version.stdout }}"
+          - "Docker Engine: Available"
+          - "{{ python_version.stdout }}"
+          - "{{ git_version.stdout }}"

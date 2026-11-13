@@ -1,0 +1,56 @@
+
+---
+- name: Deploy LabOps platform
+  hosts: labops
+  gather_facts: false
+
+  vars:
+    project_dir: "{{ playbook_dir }}/../../.."
+    compose_file: "{{ project_dir }}/infrastructure/docker/compose.yaml"
+
+  tasks:
+    - name: Start LabOps services
+      ansible.builtin.command:
+        argv:
+          - docker
+          - compose
+          - --project-directory
+          - "{{ project_dir }}"
+          - -f
+          - "{{ compose_file }}"
+          - up
+          - -d
+      args:
+        chdir: "{{ project_dir }}"
+      register: deploy_result
+      changed_when: >
+        'Started' in deploy_result.stderr or
+        'Created' in deploy_result.stderr or
+        'Recreated' in deploy_result.stderr or
+        'Started' in deploy_result.stdout or
+        'Created' in deploy_result.stdout or
+        'Recreated' in deploy_result.stdout
+
+    - name: Display deployment result
+      ansible.builtin.debug:
+        var: deploy_result.stdout_lines
+
+    - name: Check LabOps containers
+      ansible.builtin.command:
+        argv:
+          - docker
+          - compose
+          - --project-directory
+          - "{{ project_dir }}"
+          - -f
+          - "{{ compose_file }}"
+          - ps
+      args:
+        chdir: "{{ project_dir }}"
+      register: container_status
+      changed_when: false
+
+    - name: Display container status
+      ansible.builtin.debug:
+        var: container_status.stdout_lines
+
