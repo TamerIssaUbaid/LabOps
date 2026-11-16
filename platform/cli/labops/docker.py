@@ -118,4 +118,3 @@ def get_service_logs(tail=100):
         str(tail),
         timeout=30,
     )
-
